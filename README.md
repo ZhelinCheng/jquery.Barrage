@@ -21,7 +21,7 @@
 barrage_box需是固定宽高，类名自己随意起。
 
 ## js
-   var left = new Barrage('#j-barrage', {
+	var left = new Barrage('#j-barrage', {
          row : 3,
          number : 30,
          hoverStop : true,
@@ -31,7 +31,7 @@ barrage_box需是固定宽高，类名自己随意起。
              var text = data.title.substring(0,40);
              return '&#60;li class="barrage-item"&#62;'+ text +'&#60;/li&#62;';
          }
-   );
+   	);
 
 
 ## 更新日志
