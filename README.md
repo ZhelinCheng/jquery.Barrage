@@ -10,7 +10,7 @@
 - Firefox 15+
 - Opera 19+
 
-在IE9上并不是太顺滑  ，但能保证其正常运行。
+在IE9上并不是太顺滑，但能保证其正常运行。
 
 ## 快速上手
 ### HTML
@@ -29,7 +29,7 @@ barrage_box需是固定宽高，类名自己随意起。
          //margin : [30,40],
          structure : function (data,index) {
              var text = data.title.substring(0,40);
-             return '<li class="barrage-item">'+ text +'</li>';
+             return '&#60;li class="barrage-item"&#62;'+ text +'&#60;/li&#62;';
          }
    );
 
