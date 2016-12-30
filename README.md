@@ -5,10 +5,10 @@
 
 ## 兼容性
 - IE 9+
-- Chrome 31+
-- Safari 6+
-- Firefox 15+
-- Opera 19+
+- Chrome 36+
+- Safari 9+
+- Firefox 16+
+- Opera 23+
 
 在IE9上并不是太顺滑，但能保证其正常运行。
 
@@ -22,6 +22,8 @@ barrage_box需是固定宽高，类名自己随意起。
 
 ## js
 	var left = new Barrage('#j-barrage', {
+	     //dataUrl: "jsonUrl",
+         dataBox : "#data",
          row : 3,
          number : 30,
          hoverStop : true,
@@ -35,6 +37,12 @@ barrage_box需是固定宽高，类名自己随意起。
 
 
 ## 更新日志
+
+### v1.0.1
+- 弹幕距离添加方式修改。
+
+### v1.0.0
+- 增加无接口情况下的数据渲染
 
 ### v0.9.0
 - 修改滚动方法
