@@ -1,0 +1,57 @@
+/*@import "_mixins/list-group.less";*/
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
+.fn-left {
+  float: left;
+}
+.fn-right {
+  float: right;
+}
+.fn-nomt {
+  margin-top: 0;
+}
+.fn-nomb {
+  margin-bottom: 0;
+}
+.fn-noml {
+  margin-left: 0;
+}
+.fn-nomr {
+  margin-right: 0;
+}
+.fn-center {
+  /* Center slide text vertically */
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+.fn-cut {
+  /* 单行文本截断省略号 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fn-clear:before,
+.fn-clear:after {
+  content: " ";
+  display: table;
+}
+.fn-clear:after {
+  clear: both;
+}
+.fn-wrap {
+  width: 1200px;
+  margin: 0 auto;
+}

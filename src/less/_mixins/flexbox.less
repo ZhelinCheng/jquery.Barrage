@@ -1,0 +1,21 @@
+﻿//
+// CSS3 display flex
+//
+ 
+//set display property 
+.display-flex(){
+    display: -moz-box; /* Firefox */
+    display: -ms-flexbox; /* IE10 */
+    display: -webkit-box; /* Safari */
+    display: -webkit-flex; /* Chrome, WebKit */
+    display: flexbox;
+    display: flex;
+}
+
+//set flex value
+.flex(@flexValue){
+    -moz-box-flex: @flexValue;
+    -webkit-box-flex: @flexValue;
+    -webkit-flex:@flexValue;
+    flex: @flexValue;
+}

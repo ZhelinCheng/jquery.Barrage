@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv=X-UA-Compatible content="IE=edge,chrome=1">
+    <meta content=always name=referrer>
+    <meta name="keywords" content="网页关键词 必填"/>
+    <meta name="description" content="网页描述 必填" />
+    <meta itemprop="name" content="QQ分享标题 必填"/>
+    <meta itemprop="image" content="QQ分享图片链接 可选（不填则删除）"/>
+    <meta name="description" itemprop="description" content="QQ分享描述 必填"/>
+    <title>网页标题</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/base.css">
+    <script type="text/javascript" src="assets/js/vendor.js"></script>
+    <script type="text/javascript" src="assets/js/page/main.js"></script>
+</head>
+
+<body>
+
+    <div id="j-barrage-box" class="barrage_box"></div>
+<script>
+    $(function () {
+        var ba = new Barrage('#j-barrage-box', {
+            row : 2,
+            number : 30,
+            //margin : [60,400],
+            structure : function (data,index) {
+                var text = data.title.substring(0,40);
+                return '<li class="barrage-item">'+ text +'</li>';
+            }
+        });
+    })
+</script>
+</body>
+
+</html>
