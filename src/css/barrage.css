@@ -1,0 +1,38 @@
+/*@import "_mixins/list-group.less";*/
+.data-box {
+  display: none;
+}
+.barrage_box_top {
+  width: 1000px;
+  height: 400px;
+  background: black;
+  margin: 20px auto;
+}
+.barrage_box_top .barrage-row {
+  margin-bottom: 20px;
+}
+.barrage_box_top .barrage-item {
+  height: 50px;
+  line-height: 50px;
+  background-color: #5cb85c;
+  border-bottom: 1px solid #fff;
+  color: #fff;
+  list-style-type: none;
+  text-align: center;
+}
+.barrage_box_left {
+  padding: 40px 0;
+  width: 1000px;
+  height: 400px;
+  background: black;
+  margin: 0 auto;
+}
+.barrage_box_left .barrage-row {
+  margin-bottom: 50px;
+  white-space: nowrap;
+}
+.barrage_box_left .barrage-item {
+  display: inline-block;
+  color: #fff;
+  list-style-type: none;
+}
