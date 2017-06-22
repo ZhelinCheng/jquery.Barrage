@@ -1,5 +1,5 @@
 /**
- * jquery.Barrage.js v1.0.0
+ * jquery.Barrage.js v1.0.6
  * Created by 程哲林 on 2016/11/18.
  */
 
@@ -87,14 +87,20 @@
 		
 		//元素结构
 		this.structure = val.structure;
-		
-		this.init();
+
+		//头像
+		this.headPic = val.headPic;
+
+		var that = this;
+		setTimeout(function () {
+            that.init();
+        },400);
 	};
 	
 	Barrage.prototype = {
 		init: function () {
 			if (navigator.appVersion.indexOf("MSIE 9.0") > 0) {
-				if (this.direction == 'left' || this.direction == "right") {
+				if (this.direction === 'left' || this.direction === "right") {
 					this.compatible = 'margin-left';
 				} else {
 					this.compatible = 'margin-top';
@@ -118,14 +124,17 @@
 					},
 					success: function (db) {
 						var code = db.code;
-						if (code == 0) {
-							self.dataBase = self.dataBase.concat(db.result.list);
+						if (code === 0) {
+							self.dataBase = self.dataBase.concat(db.result);
+                            if(!self.dataBase.length){
+                            	return false;
+							}
 							self.dataSatisfy();
-							
+
 							self.dataAllLen = db.result.page_total;
 							self.dataAllStart = ++curr;
 							
-							if (typeof callback == 'function') {
+							if (typeof callback === 'function') {
 								callback(self.dataBase, self)
 							}
 						} else {
@@ -139,8 +148,12 @@
 			} else if (this.dataBox) {
 				//添加数组
 				Array.prototype.push.apply(this.dataBase, $(this.dataBox).children());
+                if(!this.dataBase.length){
+                    return false;
+                }
 				self.dataSatisfy();
-				if (typeof callback == 'function') {
+
+				if (typeof callback === 'function') {
 					callback(self.dataBase, self);
 				}
 			} else {
@@ -151,17 +164,16 @@
 		
 		//数据满足判断
 		dataSatisfy: function () {
-			var len = this.dataBase.length;
+            var len = this.dataBase.length;
 			if (len < this.number) {
 				this.dataBase = this.dataBase.concat(this.dataBase);
 				this.dataSatisfy();
-			}
-			else {
+			} else {
 				this.dataBaseLen = len;
 			}
 		},
 		
-		
+
 		//弹幕元素
 		getItem: function (data, i) {
 			var itemHtml = '',
@@ -174,7 +186,7 @@
 			
 			if (this.dataUrl) {
 				//console.log(data.title.replace(/<(.*)>/g, ''));
-				itemHtml = this.structure(data, i, pos++);
+				itemHtml = this.structure(data, i, pos++, this.headPic);
 			} else {
 				itemHtml = data.outerHTML;
 			}
@@ -356,7 +368,7 @@
 		
 		//获取距离随机数
 		getRandom: function () {
-			if (typeof this.margin == "object") {
+			if (typeof this.margin === "object") {
 				return Math.floor(this.margin[0]
 					+ Math.random() * (this.margin[1] - this.margin[0]));
 			}
