@@ -1,5 +1,5 @@
 /**
- * jquery.Barrage.js v1.0.0
+ * jquery.Barrage.js v1.0.6
  * Created by 程哲林 on 2016/11/18.
  */
 
