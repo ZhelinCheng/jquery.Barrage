@@ -19,9 +19,8 @@ Barrage不支持无参数的调用，部分参数会有默认值，。一个典�
 
 ### dataUrl [string]
 JSON数据源
+当此处为空时，读取box内的数据，多为CMS渲染。
 
-### dataBox [string]
-本地数据源，在无JSON数据源的情况下使用（dataUrl为空），多为CMS渲染。
 
 ### box [string] 必须
 容器，必须为ID选择符。
@@ -44,17 +43,28 @@ JSON数据源
 ### hoverStop [Boolean]
 是否hover暂停弹幕，当值为true时开启。默认为false。
 
-### dataUrl [string] 必须
-数据接口，最好使用【投票-20160810】组件接口
-
 ## 回调函数
 
 - structure
 
-### structure(data, index) [function]
-
-    structure : function (data,index) {
+### structure(item, index, pos) [function]
+```
+    structure : function (item,index) {
          return '<li class="barrage-item">'+ data +'</li>';
     }
+```
 
 这个参数允许完全自定义弹幕元素结构。接受数据及索引作为参数。如出现单双数弹幕样式不一样，请使用nth-child选择器。
+
+- dataScreen
+### dataScreen(data) [function]
+```
+    dataScreen : function (data) {
+        return data.result.list;
+    },
+```
+返回ajax返回的数据，请将列表返回。
+
+- onChang
+### dataScreen(data) [function]
+当弹幕删除添加时触发

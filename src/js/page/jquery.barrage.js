@@ -56,8 +56,6 @@
 
         //数据接口
         this.dataUrl = val.dataUrl;
-        //数据盒子
-        this.dataBox = val.dataBox;
         //保存数据
         this.dataBase = [];
         //保存数据长度
@@ -71,6 +69,14 @@
 
         //首个弹幕偏移
         this.firstOffset = [];
+
+        //元素偏移调校
+        this.itemOffset = val.itemOffset || 0;
+
+        //用于元素不同样式
+        this.itemNumber = val.itemNumber || 1;
+        this.itemNumPos = 1;
+
         //首个弹幕宽度
         this.firstWidth = [];
 
@@ -80,15 +86,24 @@
         //元素结构
         this.structure = val.structure;
 
-        this.init();
+        //数据结构
+        this.dataScreen = val.dataScreen;
+
+        //改变时的回调
+        this.onChang = val.onChang;
+
+        //头像
+        this.headPic = val.headPic;
+
+        this.init()
     };
 
     Barrage.prototype = {
         init: function () {
-            if(navigator.appVersion.indexOf("MSIE 9.0") > 0){
-                if (this.direction == 'left' || this.direction == "right") {
+            if (navigator.appVersion.indexOf("MSIE 9.0") > 0) {
+                if (this.direction === 'left' || this.direction === "right") {
                     this.compatible = 'margin-left';
-                }else {
+                } else {
                     this.compatible = 'margin-top';
                 }
             }
@@ -110,14 +125,17 @@
                     },
                     success: function (db) {
                         var code = db.code;
-                        if (code == 0) {
-                            self.dataBase = self.dataBase.concat(db.result.list);
+                        if (code === 0) {
+                            self.dataBase = self.dataBase.concat(self.dataScreen(db));
+                            if(!self.dataBase.length){
+                                return false;
+                            }
                             self.dataSatisfy();
 
                             self.dataAllLen = db.result.page_total;
                             self.dataAllStart = ++curr;
 
-                            if (typeof callback == 'function') {
+                            if (typeof callback === 'function') {
                                 callback(self.dataBase, self)
                             }
                         } else {
@@ -128,15 +146,19 @@
                         alert("网络错误，请刷新或稍后重试！")
                     }
                 })
-            } else if (this.dataBox) {
+            } else if (this.box.children().length > 0) {
                 //添加数组
-                Array.prototype.push.apply(this.dataBase,$(this.dataBox).children());
+                Array.prototype.push.apply(this.dataBase, this.box.children());
+                if(!this.dataBase.length){
+                    return false;
+                }
                 self.dataSatisfy();
-                if (typeof callback == 'function') {
+
+                if (typeof callback === 'function') {
                     callback(self.dataBase, self);
                 }
             } else {
-                console.error("未找到数据源！");
+                console.error("未找到数据源！查看文档：" + apiUrl);
                 return false;
             }
         },
@@ -147,21 +169,28 @@
             if (len < this.number) {
                 this.dataBase = this.dataBase.concat(this.dataBase);
                 this.dataSatisfy();
-            }
-            else {
+            } else {
                 this.dataBaseLen = len;
             }
         },
 
 
         //弹幕元素
-        getItem : function(data,i) {
-            var itemHtml = '';
-            if(this.dataUrl){
-                itemHtml = this.structure(data, i);
+        getItem: function (data, i) {
+            var itemHtml = '',
+                pos = 1;
+            if(this.itemNumPos <= this.itemNumber) {
+                pos = this.itemNumPos;
             }else {
+                pos = 1;
+            }
+
+            if (this.dataUrl) {
+                itemHtml = this.structure(data, i, pos++, this.headPic);
+            } else {
                 itemHtml = data.outerHTML;
             }
+            this.itemNumPos = pos;
             return itemHtml;
         },
 
@@ -169,7 +198,7 @@
         rendering: function (data, config) {
             var index = 0;
             var _html = '', item = null, i = 0, j = 0;
-            if (config.direction == 'left' || config.direction == "right") {
+            if (config.direction === 'left' || config.direction === "right") {
                 renHor();
             } else {
                 renVer();
@@ -178,12 +207,12 @@
 
             //垂直弹幕渲染
             function renVer() {
-                if (typeof config.margin == "object") {
+                if (typeof config.margin === "object") {
                     _html += '<ul class="barrage-row row-' + i + '"></ul>';
                     config.box.html(_html);
                     for (j = 0; j < config.number; j++) {
                         _html = $(config.getItem(data[j], j));
-                        _html.css("margin-right",config.getRandom() + 'px');
+                        _html.css("margin-right", config.getRandom() + 'px');
                         config.box.find(".barrage-row").append(_html);
                     }
                 } else {
@@ -198,11 +227,11 @@
                 var ele = config.box.children("ul");
                 for (i = 0; i < config.row; i++) {
                     config.firstOffset[i] = 0;
-                    var width = 0, item = null;
+                    var height = 0, item = null;
                     item = ele.eq(i);
-                    width = item.children("li").eq(0).height()
+                    height = item.children("li").eq(0).outerHeight()
                         + config.getMargin(item, config.direction);
-                    config.firstWidth[i] = width;
+                    config.firstWidth[i] = height;
                 }
 
                 (function move() {
@@ -213,31 +242,43 @@
 
             //水平弹幕渲染
             function renHor() {
-                if (typeof config.margin == "object") {
+
+                if (typeof config.margin === "object") {
                     for (i = 0; i < config.row; i++) {
-                        _html += '<ul class="barrage-row row-' + i + '"></ul>';
+                        _html += '<ul style="white-space:nowrap;" class="barrage-row row-' + i + '"></ul>';
                     }
                     config.box.html(_html);
 
                     for (j = 0; j < config.number; j++) {
                         index = j % config.row;
                         _html = $(config.getItem(data[j], j));
-                        _html.css("margin-right", config.getRandom() + 'px');
+
+                        _html.css({
+                            "margin-right": config.getRandom() + 'px',
+                            "display": "inline-block"
+                        });
                         config.box.find(".row-" + index).append(_html);
                     }
 
                 } else {
                     for (i = 0; i < config.row; i++) {
-                        _html += '<ul class="barrage-row row-' + i + '">';
+                        _html += '<ul style="white-space:nowrap;" class="barrage-row row-' + i + '">';
                         for (j = 0; j < config.number; j++) {
                             item = data[j];
                             index = j % config.row;
-                            if (i == index) {
-                                _html += config.getItem(item, j);
+                            if (i === index) {
+                                var $item = $(config.getItem(item, j));
+                                $item.css({
+                                    "margin-right": config.margin,
+                                    "display": "inline-block"
+                                });
+                                _html += $item[0].outerHTML;
                             }
                         }
                         _html += '</ul>';
                     }
+
+
                     config.box.html(_html);
                 }
 
@@ -247,7 +288,7 @@
                     config.firstOffset[i] = 0;
                     var width = 0, item = null;
                     item = ele.eq(i);
-                    width = item.children("li").eq(0).width()
+                    width = item.children("li").eq(0).outerWidth()
                         + config.getMargin(item, config.direction);
                     config.firstWidth[i] = width;
                 }
@@ -259,7 +300,7 @@
                 })();
             }
 
-            if (config.hoverStop == true) {
+            if (config.hoverStop === true) {
                 config.hoverStopFn();
             }
         },
@@ -277,36 +318,40 @@
                 item = ele.eq(i);
                 if (off[i] >= wid[i]) {
                     item.children("li:first-child").remove();
-                    if(dir == 'left' || dir == 'right'){
+                    if(typeof this.onChang === 'function') {
+                        this.onChang(i);
+                    }
+
+                    if (dir === 'left' || dir === 'right') {
                         off[i] = off[i] - wid[i];
                         wid[i] = this.getMargin(item, dir)
-                            + item.children("li:first-child").width();
-                    }else {
+                            + item.children("li:first-child").outerWidth();
+                    } else {
                         off[i] = off[i] - wid[i] - 1;
                         wid[i] = this.getMargin(item, dir)
-                            + item.children("li:first-child").height();
+                            + item.children("li:first-child").outerHeight();
                     }
                     this.addData(item);
                 }
-                if (!item.hasClass("stop") && this.compatible == 'transform') {
+                if (!item.hasClass("stop") && this.compatible === 'transform') {
                     style(item, -(off[i] += speed));
-                }else if(!item.hasClass("stop") && this.compatible != 'transform'){
+                } else if (!item.hasClass("stop") && this.compatible !== 'transform') {
                     styleIE(item, -(off[i] += speed));
                 }
             }
 
             function style(e, val) {
-                if (dir == 'left' || dir == 'right') {
-                    val = "translateX("+ val +"px)";
+                if (dir === 'left' || dir === 'right') {
+                    val = "translateX(" + val + "px)";
                 } else {
-                    val = "translateY("+ val +"px)";
+                    val = "translateY(" + val + "px)";
                 }
                 e.css(self.compatible, val);
             }
 
-            function styleIE(e,val) {
-                if (dir == 'left' || dir == 'right') {
-                    val =  val +"px";
+            function styleIE(e, val) {
+                if (dir === 'left' || dir === 'right') {
+                    val = val + "px";
                 } else {
                     val = val + "px";
                 }
@@ -332,14 +377,33 @@
                 }
                 this.dataStart = 0;
             }
-            ele.append(this.getItem(this.dataBase[this.dataStart], this.dataStart));
-            ele.children("li:last").css("margin-right", this.getRandom() + 'px');
+
+            var $item = $(this.getItem(this.dataBase[this.dataStart], this.dataStart));
+
+            var obj = {};
+            if (typeof this.margin === "object") {
+                obj = {
+                    "margin-right": this.getRandom() + 'px',
+                    "display": "inline-block"
+                }
+            }else {
+                obj = {
+                    "margin-right": this.margin,
+                    "display": "inline-block"
+                }
+            }
+
+
+            $item.css(obj);
+            ele.append($item);
+
+
             this.dataStart++;
         },
 
         //获取距离随机数
         getRandom: function () {
-            if (typeof this.margin == "object") {
+            if (typeof this.margin === "object") {
                 return Math.floor(this.margin[0]
                     + Math.random() * (this.margin[1] - this.margin[0]));
             }
@@ -348,14 +412,14 @@
         //获取弹幕间距
         getMargin: function (ele, val) {
             var item = ele.children().eq(0), mar = null;
-            if (val == 'left' || val == 'right') {
+            if (val === 'left' || val === 'right') {
                 mar = parseInt(item.css("margin-right"))
                     + parseInt(item.css("margin-left"));
             } else {
                 mar = parseInt(item.css("margin-top"))
                     + parseInt(item.css("margin-bottom"));
             }
-            return mar;
+            return mar + this.itemOffset;
         }
     };
 
