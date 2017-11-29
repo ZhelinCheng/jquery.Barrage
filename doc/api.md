@@ -66,5 +66,5 @@ JSON数据源
 返回ajax返回的数据，请将列表返回。
 
 - onChang
-### dataScreen(data) [function]
+### onChang(data) [function]
 当弹幕删除添加时触发
